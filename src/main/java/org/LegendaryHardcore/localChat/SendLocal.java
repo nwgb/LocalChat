@@ -39,10 +39,11 @@ public class SendLocal implements Listener {
     public void sendLocalMessage(Player sender, String messageRaw) {
         World world = sender.getWorld();
 
-        // If player is within the same world and within range, format and send the message
+        // If player is within the same world and within range or is OP, format and send the message
         for (Player recipient : Bukkit.getOnlinePlayers()) {
-            if (recipient.getWorld().equals(world)) {
-                if (recipient.getLocation().distanceSquared(sender.getLocation()) <= maxMessageDistance) {
+
+            if (recipient.isOp() || (recipient.getWorld().equals(world) &&
+                recipient.getLocation().distanceSquared(sender.getLocation()) <= maxMessageDistance)) {
 
                     String message = plugin.prefix
                             + ChatColor.WHITE + " <"
@@ -54,7 +55,6 @@ public class SendLocal implements Listener {
 
                     plugin.getLogger().info("[Local Chat] <" + sender.getName() + "> " + message);
 
-                }
             }
         }
     }
