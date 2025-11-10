@@ -36,8 +36,15 @@ public final class LocalChat extends JavaPlugin {
         getServer().getPluginManager().registerEvents(sendLocalMessage, this);
         getServer().getPluginManager().registerEvents(new PlayerQuit(this), this);
 
-        getCommand("l").setExecutor(new CommandLocal(sendLocalMessage));
-        getCommand("localtoggle").setExecutor(new CommandLocalToggle(this));
+        // /local command
+        CommandLocal commandLocal = new CommandLocal(sendLocalMessage);
+        getCommand("l").setExecutor(commandLocal);
+        getCommand("l").setTabCompleter(commandLocal);
+
+        // /localtoggle command
+        CommandLocalToggle commandLocalToggle = new CommandLocalToggle(this);
+        getCommand("localtoggle").setExecutor(commandLocalToggle);
+        getCommand("localtoggle").setTabCompleter(commandLocal);
 
         getLogger().info("LocalChat has been enabled!");
     }
