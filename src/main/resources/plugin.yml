@@ -2,7 +2,7 @@ name: LocalChat
 version: '1.0-SNAPSHOT'
 main: org.LegendaryHardcore.localChat.LocalChat
 api-version: '1.21'
-
+folia-supported: true
 commands:
   l:
     description: Sends a message only to nearby players.

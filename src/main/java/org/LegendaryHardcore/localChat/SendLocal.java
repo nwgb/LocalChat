@@ -2,6 +2,7 @@ package org.LegendaryHardcore.localChat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,10 +18,12 @@ public class SendLocal implements Listener {
     private final LocalChat plugin;
 
     // Set maximum message distance to server render distance
-    private static final double maxMessageDistance = Math.pow(Bukkit.getServer().getViewDistance() * 16,2);
+    private final double maxMessageDistance;
 
     public SendLocal(LocalChat plugin) {
+
         this.plugin = plugin;
+        this.maxMessageDistance = Math.pow(Bukkit.getServer().getViewDistance() * 16,2);
     }
 
     // Chat listener
@@ -31,31 +34,34 @@ public class SendLocal implements Listener {
         // If this is a local message, cancel sending globally
         if (plugin.localEnabled(sender.getUniqueId())) {
             event.setCancelled(true);
-            this.sendLocalMessage(sender, event.getMessage());
+
+            String rawMessage = event.getMessage();
+            // Schedule on sender's region
+            sender.getScheduler().execute(plugin, () -> {
+                this.sendLocalMessage(sender, rawMessage);
+            }, null, 1L);
         }
     }
 
     // Format and send message locally
     public void sendLocalMessage(Player sender, String messageRaw) {
         World world = sender.getWorld();
+        Location location = sender.getLocation().clone();
+        String message = plugin.prefix
+                + ChatColor.WHITE + " <"
+                + sender.getDisplayName()
+                + ChatColor.WHITE + "> "
+                + messageRaw;
 
         // If player is within the same world and within range or is OP, format and send the message
         for (Player recipient : Bukkit.getOnlinePlayers()) {
-
-            if (recipient.isOp() || (recipient.getWorld().equals(world) &&
-                recipient.getLocation().distanceSquared(sender.getLocation()) <= maxMessageDistance)) {
-
-                    String message = plugin.prefix
-                            + ChatColor.WHITE + " <"
-                            + sender.getDisplayName()
-                            + ChatColor.WHITE + "> "
-                            + messageRaw;
-
+                if (recipient.isOp() || (recipient.getWorld().equals(world) &&
+                        recipient.getLocation().distanceSquared(location) <= maxMessageDistance)) {
                     recipient.sendMessage(message);
 
-                    plugin.getLogger().info("[Local Chat] <" + sender.getName() + "> " + message);
+                }
 
             }
-        }
+        plugin.getLogger().info("<" + sender.getName() + "> " + message);
     }
 }
