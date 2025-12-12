@@ -16,14 +16,22 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
  */
 public class SendLocal implements Listener {
     private final LocalChat plugin;
-
+    private final String prefix;
+    private final String messageColour;
+    private final Integer messageRange;
+    private final boolean dynamicRange;
     // Set maximum message distance to server render distance
     private final double maxMessageDistance;
 
-    public SendLocal(LocalChat plugin) {
-
+    public SendLocal(LocalChat plugin, String prefix, String messageColour, Integer messageRange, boolean dynamicRange) {
         this.plugin = plugin;
-        this.maxMessageDistance = Math.pow(Bukkit.getServer().getViewDistance() * 16,2);
+        this.prefix = prefix;
+        this.messageColour = messageColour;
+        this.messageRange = messageRange;
+        this.dynamicRange = dynamicRange;
+        // If dynamic range is enabled, max message distance is based on render distance
+        this.maxMessageDistance = dynamicRange? Math.pow(Bukkit.getServer().getViewDistance() * 16,2)
+                : Math.pow(messageRange, 2);;
     }
 
     // Chat listener
@@ -47,10 +55,11 @@ public class SendLocal implements Listener {
     public void sendLocalMessage(Player sender, String messageRaw) {
         World world = sender.getWorld();
         Location location = sender.getLocation().clone();
-        String message = plugin.prefix
+        String message = prefix
                 + ChatColor.WHITE + " <"
                 + sender.getDisplayName()
                 + ChatColor.WHITE + "> "
+                + messageColour
                 + messageRaw;
 
         // If player is within the same world and within range or is OP, format and send the message
@@ -62,6 +71,6 @@ public class SendLocal implements Listener {
                 }
 
             }
-        plugin.getLogger().info("<" + sender.getName() + "> " + message);
+        plugin.getLogger().info("<" + sender.getName() + "> " + messageRaw);
     }
 }

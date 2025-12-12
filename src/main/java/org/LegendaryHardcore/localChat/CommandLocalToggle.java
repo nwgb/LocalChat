@@ -24,11 +24,11 @@ public class CommandLocalToggle implements CommandExecutor, TabCompleter {
         Player player = (Player) sender;
 
         if (plugin.localEnabled(player.getUniqueId())) {
-            // Toggle on
+            // Toggle off
             plugin.localChatDisabled(player.getUniqueId());
             player.sendMessage(ChatColor.AQUA + "[Local] " + ChatColor.WHITE + "Local chat is now toggled " + ChatColor.RED + "off");
         } else {
-            // Toggle off
+            // Toggle on
             plugin.localChatEnabled(player.getUniqueId());
             player.sendMessage(ChatColor.AQUA + "[Local] " + ChatColor.WHITE + "Local chat is now toggled " + ChatColor.GREEN + "on");
         }

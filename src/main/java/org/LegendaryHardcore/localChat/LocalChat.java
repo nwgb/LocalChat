@@ -11,9 +11,6 @@ import java.util.UUID;
  */
 public final class LocalChat extends JavaPlugin {
 
-    // Prefix to display before local messages
-    public static final String prefix = ChatColor.AQUA + "[Local]" + ChatColor.RESET;
-
     // Track players with local chat toggled on
     private Set<UUID> localChatPlayers = new HashSet<>();
 
@@ -31,7 +28,19 @@ public final class LocalChat extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        SendLocal sendLocalMessage = new SendLocal(this);
+        // Prefix and chat colour set in config
+        saveDefaultConfig();
+        String prefix = getConfig().getString("prefix", "§b[Local]§r");
+        String messageColour = getConfig().getString("message-colour", "§x§c§c§f§f§f§f");
+        Integer messageRange = getConfig().getInt("message-range", 100);
+        boolean dynamicRange = getConfig().getBoolean("dynamic-range", false);
+
+        SendLocal sendLocalMessage = new SendLocal(
+                this,
+                prefix,
+                messageColour,
+                messageRange,
+                dynamicRange);
 
         getServer().getPluginManager().registerEvents(sendLocalMessage, this);
         getServer().getPluginManager().registerEvents(new PlayerQuit(this), this);

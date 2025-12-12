@@ -1,0 +1,11 @@
+# Prefix shown before local messages
+prefix: "§b[Local]§r"
+
+# Colour code for local chat messages
+message-colour: "§x§d§b§f§f§f§f"
+
+# How far from the sender local messages are received
+message-range: 100
+
+# If dynamic range is enabled, the message-range will be based on the server render distance rather than the config value
+dynamic-range: false
